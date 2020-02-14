@@ -38,12 +38,12 @@ let declare_base_method ~signature {method_name; params; type_name} =
   let signature = base_method_signature ~signature ~params ~type_name in
   Ml.declare_method ~virtual_:true ~signature ~name:method_name ()
 
-(* This type describes a variables bound when deconstructing a value.
+(* This type describes a variable bound when deconstructing a value.
    - [var] is the variable name
    - [recursive_call] is the function to apply to the variable to recursively
    traverse it. It is based on the type of the variable. For example if the
    variable is an expression it will be ["self#expression"]. If it's a list
-    of integers it will be ["self#list self#int"]. *)
+   of integers it will be ["self#list self#int"]. *)
 type var =
   { var : string
   ; recursive_call : string
@@ -62,7 +62,7 @@ type kind =
     ["{a; b}"], for a pair it would be ["(x0, x1)"].
     - [vars] is the list of variables that are bound in the above mentioned
     pattern.
-    - [kind] describes the kind of value of the deconstructed value. *)
+    - [kind] describes the kind of value, record, tuple, etc. *)
 type deconstructed =
   { pattern : string
   ; vars : var list
@@ -80,7 +80,7 @@ type deconstructed =
     This distinction is useful for map-like traversal classes that need to
     return abstract type and therefore must wrap the "reconstructed" value
     in an [of_concrete] call in the [Ast_type _] case.
-    Other traversal classes can ignore the context. *)
+    Other traversal classes can ignore this. *)
 type value_kind =
   | Ast_type of {node_name : string; targs : Astlib.Grammar.ty list}
   | Abstract
@@ -101,7 +101,7 @@ type value_kind =
     name of the node it must be applied to. For example, for fold, [args "x"] is
     [["x"; "acc"]].
     - [recurse] is the core of the traversal. It generates the code for traversing
-    a the given deconstructed value. *)
+    the given deconstructed value. *)
 type traversal =
   { class_name : string
   ; extra_methods : (unit -> unit) option
